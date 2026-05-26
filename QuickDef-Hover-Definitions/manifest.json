@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "QuickDef — Hover Definitions",
+  "version": "2.3.1",
+  "description": "Hover over any annotation, method, or library on GitHub/GitLab to see instant definitions — static-first, AI fallback.",
+  "permissions": ["activeTab", "storage", "scripting"],
+  "host_permissions": [
+    "https://github.com/*",
+    "https://gitlab.com/*",
+    "https://registry.npmjs.cf/*",
+    "https://registry.npmjs.org/*",
+    "https://pypi.org/*",
+    "https://devdocs.io/*",
+    "https://api.groq.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_ui": { "page": "options.html", "open_in_tab": true },
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/*", "https://gitlab.com/*"],
+      "js": ["definitions.js", "lookup.js", "content.js"],
+      "css": ["tooltip.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

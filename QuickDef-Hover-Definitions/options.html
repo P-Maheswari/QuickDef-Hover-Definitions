@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>CodeLens — Settings</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap');
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0e1117;--s:#151820;--s2:#1c2030;--b:#1e2433;--b2:#252a3a;
+      --ind:#818cf8;--ind-dk:#4f46e5;
+      --txt:#e2e8f0;--sub:#7a8299;--dim:#3a4055;
+      --green:#22c55e;--red:#f87171;--amber:#f59e0b;
+      --mono:'JetBrains Mono',monospace;--sans:'DM Sans',system-ui,sans-serif;
+    }
+    body{font-family:var(--sans);background:var(--bg);color:var(--txt);min-height:100vh;padding:40px 20px}
+    .page{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+
+    .brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700;color:var(--ind);margin-bottom:4px}
+    .brand svg{flex-shrink:0}
+    .subtitle{font-size:13px;color:var(--sub);line-height:1.6}
+
+    .card{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:22px 24px}
+    .card-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--sub);margin-bottom:16px;display:flex;align-items:center;gap:6px}
+
+    .field{margin-bottom:16px}
+    .field:last-child{margin-bottom:0}
+    .field label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}
+    .field input,.field select{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:8px;color:var(--txt);font-family:var(--mono);font-size:13px;padding:9px 13px;outline:none;transition:border-color .15s;appearance:none}
+    .field input:focus,.field select:focus{border-color:var(--ind)}
+    .field input::placeholder{color:var(--dim)}
+    .field select option{background:var(--s2)}
+    .hint{margin-top:6px;font-size:12px;color:var(--dim);line-height:1.5}
+    .hint a{color:var(--ind);text-decoration:none}
+    .hint a:hover{text-decoration:underline}
+
+    .cb-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;cursor:pointer}
+    .cb-row input{accent-color:var(--ind);width:15px;height:15px;cursor:pointer;flex-shrink:0}
+    .cb-row span{font-size:13px;color:var(--sub)}
+
+    /* Tier table */
+    .tier-table{width:100%;border-collapse:collapse;font-size:12.5px}
+    .tier-table th{text-align:left;color:var(--sub);font-weight:600;font-size:11px;padding:6px 10px;border-bottom:1px solid var(--b)}
+    .tier-table td{padding:8px 10px;border-bottom:1px solid var(--b);vertical-align:top;color:var(--sub)}
+    .tier-table tr:last-child td{border-bottom:none}
+    .tier-table td:first-child{color:var(--txt);font-weight:500;white-space:nowrap}
+    .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+    .dot-ind{background:var(--ind)}
+    .dot-amb{background:var(--amber)}
+    .dot-sub{background:var(--sub)}
+
+    .actions{display:flex;align-items:center;gap:12px}
+    .btn-save{background:var(--ind);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:14px;font-weight:600;padding:10px 24px;cursor:pointer;transition:opacity .15s}
+    .btn-save:hover{opacity:.9}
+    .btn-clear{background:none;color:var(--red);border:1px solid rgba(248,113,113,.3);border-radius:8px;font-family:var(--sans);font-size:13px;font-weight:500;padding:9px 18px;cursor:pointer;transition:background .15s}
+    .btn-clear:hover{background:rgba(248,113,113,.08)}
+    .saved{font-size:13px;color:var(--green);font-weight:600;opacity:0;transition:opacity .3s}
+    .saved.show{opacity:1}
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div>
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+      </svg>
+      CodeLens Settings
+    </div>
+    <p class="subtitle">Hover definitions for GitHub &amp; GitLab — static-first, AI fallback. Keys stored locally.</p>
+  </div>
+
+  <!-- How tiers work -->
+  <div class="card">
+    <div class="card-title">⚡ How the three tiers work</div>
+    <table class="tier-table">
+      <tr>
+        <th>Tier</th><th>Source</th><th>Speed</th><th>Requires</th>
+      </tr>
+      <tr>
+        <td><span class="dot dot-ind"></span>1 — Dictionary</td>
+        <td>Bundled definitions.js (~400 entries: annotations, hooks, keywords)</td>
+        <td>0 ms</td><td>Nothing</td>
+      </tr>
+      <tr>
+        <td><span class="dot dot-amb"></span>2 — Public APIs</td>
+        <td>npm registry · PyPI · DevDocs index (package names &amp; built-ins)</td>
+        <td>100–400 ms</td><td>Nothing</td>
+      </tr>
+      <tr>
+        <td><span class="dot dot-sub"></span>3 — AI (Groq)</td>
+        <td>Groq LLM (Llama 3 / Mixtral) — only called when tiers 1 &amp; 2 miss</td>
+        <td>600–1500 ms</td><td>Groq API key</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Groq -->
+  <div class="card">
+    <div class="card-title">🔑 Groq API (Tier 3 — AI fallback)</div>
+    <div class="field">
+      <label>API Key</label>
+      <input type="password" id="groqKey" placeholder="gsk_…" autocomplete="off"/>
+      <p class="hint">Free at <a href="https://console.groq.com" target="_blank">console.groq.com</a>. Only called when no static match is found.</p>
+    </div>
+    <div class="field">
+      <label>Model</label>
+      <select id="groqModel">
+        <option value="llama-3.1-8b-instant">Llama 3.1 – 8B Instant (fastest, recommended)</option>
+        <option value="llama-3.3-70b-versatile">Llama 3.3 – 70B Versatile (best quality)</option>
+        <option value="llama-3.1-70b-versatile">Llama 3.1 – 70B Versatile</option>
+        <option value="gemma2-9b-it">Gemma 2 – 9B</option>
+      </select>
+      <p class="hint">8B is recommended — fallback should be fast, not perfect.</p>
+    </div>
+  </div>
+
+  <!-- Behaviour -->
+  <div class="card">
+    <div class="card-title">⚙ Behaviour</div>
+    <div class="field">
+      <label>Hover Delay (ms)</label>
+      <input type="number" id="hoverDelay" value="600" min="200" max="3000" step="100"/>
+      <p class="hint">Milliseconds before the tooltip fires. 600ms avoids accidental triggers.</p>
+    </div>
+    <label class="cb-row"><input type="checkbox" id="cacheEnabled" checked/><span>Cache results per session (avoids re-querying same token)</span></label>
+    <label class="cb-row"><input type="checkbox" id="showLang" checked/><span>Show detected language in tooltip</span></label>
+    <label class="cb-row"><input type="checkbox" id="llmFallback" checked/><span>Enable AI fallback (Tier 3) when no static match found</span></label>
+  </div>
+
+  <!-- Sites -->
+  <div class="card">
+    <div class="card-title">🌐 Active Sites</div>
+    <label class="cb-row"><input type="checkbox" id="siteGithub" checked/><span>GitHub (github.com)</span></label>
+    <label class="cb-row"><input type="checkbox" id="siteGitlab" checked/><span>GitLab (gitlab.com)</span></label>
+    <p class="hint" style="margin-top:4px">Changing site settings requires reloading the tab.</p>
+  </div>
+
+  <div class="actions">
+    <button class="btn-save" id="saveBtn">Save Settings</button>
+    <button class="btn-clear" id="clearBtn">Clear All</button>
+    <span class="saved" id="savedMsg"></span>
+  </div>
+
+</div>
+<script src="options.js"></script>
+</body>
+</html>
