@@ -10,7 +10,7 @@
 
 Hover over any code token on GitHub  and get instant definitions, examples, and documentation links—without leaving the page.
 
-[Features](#-features) • [Installation](#-installation) • [Setup](#-setup) • [How It Works](#-how-it-works) • [Configuration](#-configuration) • [FAQ](#-faq)
+[Features](#-features) • [Installation](#-installation) • [Setup](#-setup) • [How It Works](#-how-it-works) • [Configuration](#-configuration-options) • [FAQ](#-faq)
 
 </div>
 
